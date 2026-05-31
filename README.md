@@ -2,114 +2,134 @@
 
 A full-stack Leave Management System built using **Spring Boot** and **React (Vite)** that automates employee leave application, approval workflows, and leave tracking within an organization.
 
+---
+
+## 🚀 Features
+
+### 👨‍💼 Employee
+- Apply for leave
+- View leave balance
+- View leave history
+- Cancel leave requests (before approval)
+
+### 👨‍💻 Manager
+- View team leave requests
+- Approve or reject leave requests
+- Add remarks for approval/rejection
+
+### 🧑‍💼 Admin (HR)
+- Manage employees
+- Configure leave types (Casual, Sick, etc.)
+- Manage holidays
+- View organization-wide reports
 
 ---
 
-# 🚀 Features
+## 🔐 Authentication & Security
 
-## 👨‍💼 Employee
-
-* Apply for leave
-* View leave balance
-* View leave history
-* Cancel leave requests (before approval)
-
-## 👨‍💻 Manager
-
-* View team leave requests
-* Approve or reject leave requests
-* Add remarks for approval/rejection
-
-## 🧑‍💼 Admin (HR)
-
-* Manage employees
-* Configure leave types (Casual, Sick, etc.)
-* Manage holidays
-* View organization-wide reports
+- JWT-based authentication
+- Role-based access control (EMPLOYEE, MANAGER, ADMIN)
+- Password encryption using BCrypt
+- Secure REST APIs
 
 ---
 
-# 🔐 Authentication & Security
-
-* JWT-based authentication
-* Role-based access control (EMPLOYEE, MANAGER, ADMIN)
-* Password encryption using BCrypt
-* Secure REST APIs
-
----
-
-# 🏗 Project Structure
+## 🏗 Project Structure
 
 ```
 leave-management-system/
-├── frontend/   → React (Vite) client
-├── backend/    → Spring Boot REST API
+├── frontend/          → React (Vite) client
+├── backend/           → Spring Boot REST API
+├── docker-compose.yml → Orchestrates all three services
 └── README.md
 ```
 
 ---
 
-# 🛠 Tech Stack
+## 🛠 Tech Stack
 
-## Backend
+### Backend
+- Java 21
+- Spring Boot
+- Spring Security
+- Spring Data JPA (Hibernate)
+- MySQL 8
 
-* Java 17
-* Spring Boot
-* Spring Security
-* Spring Data JPA (Hibernate)
-* MySQL
+### Frontend
+- React 19
+- Vite
+- Axios
+- CSS
 
-## Frontend
-
-* React
-* Vite
-* Axios
-* CSS
-
----
-
-# 📊 Key Concepts Implemented
-
-* RESTful API design
-* DTO pattern (no direct entity exposure)
-* Entity relationships (One-to-Many, Many-to-One)
-* Pagination & filtering
-* Global exception handling (`@ControllerAdvice`)
-* Transaction management
-* Role-based authorization
+### Infrastructure
+- Docker + Docker Compose
+- Nginx (serves frontend + proxies API requests)
+- MySQL (persistent volume)
 
 ---
 
-# ⚙️ Setup & Installation
+## 📊 Key Concepts Implemented
 
-## 📌 Prerequisites
-
-Make sure you have installed:
-
-* Java 17+
-* Maven
-* Node.js (v16+)
-* MySQL
+- RESTful API design
+- DTO pattern (no direct entity exposure)
+- Entity relationships (One-to-Many, Many-to-One)
+- Pagination & filtering
+- Global exception handling (`@ControllerAdvice`)
+- Transaction management
+- Role-based authorization
+- Containerized deployment with Docker
 
 ---
 
-## 🔧 Backend Setup
+## ⚙️ Running with Docker (Recommended)
+
+### Prerequisites
+- Docker Desktop installed and running
+
+### Steps
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/leave-management-system.git
+cd leave-management-system
+
+# 2. Set up environment variables
+cp .env.example .env
+# Open .env and update passwords if needed
+
+# 3. Start everything
+docker-compose up --build
+```
+
+App runs at: **http://localhost**
+
+All three services (frontend, backend, MySQL) start automatically and are wired together. No separate setup needed.
+
+> **First run:** `JPA_DDL_AUTO=create` in `.env` creates the schema and seeds demo data.
+> **Subsequent runs:** Change to `JPA_DDL_AUTO=update` to preserve your data across restarts.
+
+---
+
+## ⚙️ Manual Setup (Without Docker)
+
+### Prerequisites
+- Java 21+
+- Maven
+- Node.js v16+
+- MySQL
+
+### Backend
 
 ```bash
 cd backend
+# Update spring.datasource.password in application.properties
 mvn clean install
 mvn spring-boot:run
 ```
 
-Backend runs at:
+Runs at: `http://localhost:8080`
 
-```
-http://localhost:8080
-```
-
----
-
-## 🎨 Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
@@ -117,220 +137,106 @@ npm install
 npm run dev
 ```
 
-Frontend runs at:
-
-```
-http://localhost:5173
-```
+Runs at: `http://localhost:5173`
 
 ---
 
-# 🔗 API Integration
-
-Frontend communicates with backend using:
-
-```
-http://localhost:8080/api/
-```
-
-Ensure backend is running before using frontend.
-
----
 ## 🔑 Demo Credentials
 
-The application comes with preloaded demo users for testing different roles.
-All users are automatically created on application startup via `data.sql`.
+The login page includes quick-fill buttons for each role — just click the role and hit Login.
 
-> **Password for all users:** `password123`
+| Role     | Email                  | Password    |
+|----------|------------------------|-------------|
+| Admin    | admin@test.com         | password123 |
+| Manager  | manager@test.com       | password123 |
+| Employee | employee1@test.com     | password123 |
+| Employee | employee2@test.com     | password123 |
 
----
-
-### 🧑‍💼 Admin
-
-* **Email:** [admin@test.com](mailto:admin@test.com)
-* **Access:** Full system access (manage employees, leave types, holidays, reports)
-
----
-
-### 👨‍💻 Manager
-
-* **Email:** [manager@test.com](mailto:manager@test.com)
-* **Access:** Approve/reject leave requests, view team leave data
+> Users are seeded automatically on first startup via `data.sql`.
 
 ---
 
-### 👨‍💼 Employee
+## 📄 API Documentation
 
-* **Email:** [employee1@test.com](mailto:employee1@test.com)
-
-* **Access:** Apply for leave, view balance and history
-
-* **Email:** [employee2@test.com](mailto:employee2@test.com)
-
-* **Access:** Apply for leave, view balance and history
-
----
-
-## ⚠️ Notes
-
-* These are **demo accounts for testing purposes only**
-* Users are seeded automatically using `data.sql`
-* Make sure the backend is running before attempting login
-* JWT authentication is required for accessing protected endpoints
-
----
-
-## ⚠️ Database Setup
-
-Update the following property before running:
-
-spring.datasource.password=your_mysql_password_here
-
-Ensure MySQL is running and the database `leave_management_db` exists.
-
----
-
-# 📄 API Documentation
-
+Swagger UI available at:
 ```
-(http://localhost:8080/swagger-ui/index.html)
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
 
-# 📸 Screenshots
+## 📸 Screenshots
 
-## 📸 Application Walkthrough
-
-### 🔐 Authentication
-
-Secure login using JWT-based authentication.
-
-<img src="./screenshots/LoginPage.png" width="800"/>
-
----
-
-## 👨‍💼 Employee Features
+### 🔐 Login
+![Login](./screenshots/LoginPage.png)
 
 ### 📊 Employee Dashboard
-
-Overview of leave balance and quick actions.
-
-<img src="./screenshots/EmployeeDashboard.png" width="800"/>
+![Employee Dashboard](./screenshots/EmployeeDashboard.png)
 
 ### 📝 Apply for Leave
-
-Employees can submit leave requests.
-
-<img src="./screenshots/EmployeeLeaveApplication.png" width="800"/>
+![Apply Leave](./screenshots/EmployeeLeaveApplication.png)
 
 ### 📜 Leave History
-
-Track past and current leave requests.
-
-<img src="./screenshots/EmployeeLeaveHistory.png" width="800"/>
-
----
-
-## 👨‍💻 Manager Features
+![Leave History](./screenshots/EmployeeLeaveHistory.png)
 
 ### 📋 Manager Dashboard
+![Manager Dashboard](./screenshots/ManagerDashboard.png)
 
-View team leave activity and pending approvals.
-
-<img src="./screenshots/ManagerDashboard.png" width="800"/>
-
-### ✅ Leave Approval System
-
-Approve or reject employee leave requests.
-
-<img src="./screenshots/ManagerLeaveApproval.png" width="800"/>
+### ✅ Leave Approval
+![Leave Approval](./screenshots/ManagerLeaveApproval.png)
 
 ### 👥 Team Leave History
-
-Monitor leave records across the team.
-
-<img src="./screenshots/ManagerTeamLeaveHistory.png" width="800"/>
-
----
-
-## 🧑‍💼 Admin Features
+![Team History](./screenshots/ManagerTeamLeaveHistory.png)
 
 ### 🛠 Admin Dashboard
-
-Central control panel for system management.
-
-<img src="./screenshots/AdminDashboard.png" width="800"/>
+![Admin Dashboard](./screenshots/AdminDashboard.png)
 
 ### 👨‍👩‍👧 Employee Management
-
-Add, update, or manage employees.
-
-<img src="./screenshots/AdminsEmployeeManagement.png" width="800"/>
+![Employee Management](./screenshots/AdminsEmployeeManagement.png)
 
 ### 🏖 Leave Type Management
-
-Configure different types of leaves.
-
-<img src="./screenshots/AdminLeaveTypeManagement.png" width="800"/>
+![Leave Types](./screenshots/AdminLeaveTypeManagement.png)
 
 ### 📊 Leave Balance Management
-
-Manage and assign leave balances.
-
-<img src="./screenshots/AdminLeaveBalanceManagement.png" width="800"/>
+![Leave Balances](./screenshots/AdminLeaveBalanceManagement.png)
 
 ### 🎉 Holiday Management
-
-Define and manage organizational holidays.
-
-<img src="./screenshots/AdminHolidayManagement.png" width="800"/>
+![Holidays](./screenshots/AdminHolidayManagement.png)
 
 ---
-## 🎥 Demo Video
 
-A quick walkthrough of the Leave Management System showcasing authentication, role-based access, and the complete leave workflow.
+## 🎥 Demo Video
 
 [![Watch Demo](https://img.youtube.com/vi/lZSX2dPrckc/0.jpg)](https://youtu.be/lZSX2dPrckc)
 
-> Includes Admin, Manager, and Employee functionalities along with end-to-end leave request handling.
----
-
-# ⚠️ Important Notes
-
-* Ensure backend is running before frontend
-* JWT token is required for protected endpoints
-* Leave balance updates only after approval
-* Holidays are excluded from leave calculation
+> Covers Admin, Manager, and Employee flows end-to-end.
 
 ---
 
-# 💡 Future Improvements
+## ⚠️ Important Notes
 
-* Email notifications for approvals/rejections
-* File attachments for leave requests
-* Dashboard analytics
-* Docker deployment
-* Role-based UI enhancements
+- On first run, tables are created and demo data is seeded automatically
+- Change `JPA_DDL_AUTO` to `update` after first run to persist data
+- JWT token is required for all protected endpoints
+- Leave balance updates only after a request is approved
+- Holidays are excluded from leave day calculations
+  
+
+## 🧠 What This Project Demonstrates
+
+- Real-world enterprise backend design
+- Authentication & authorization flows
+- Business logic implementation (leave workflow)
+- Full-stack integration
+- Containerized deployment with Docker
+- Clean and scalable architecture
 
 ---
 
-# 🧠 What This Project Demonstrates
-
-* Real-world enterprise backend design
-* Authentication & authorization flows
-* Business logic implementation (leave workflow)
-* Full-stack integration
-* Clean and scalable architecture
-
----
-
-# 📌 Author
+## 📌 Author
 
 **Mithil Shah**
 
 ---
 
-# ⭐ If you like this project
-
-Give it a ⭐ on GitHub!
+⭐ If you found this useful, give it a star!
