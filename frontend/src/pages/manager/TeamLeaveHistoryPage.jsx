@@ -18,7 +18,7 @@ function TeamLeaveHistoryPage() {
     try {
 
       const response = await fetch(
-        "http://localhost:8080/api/leave-requests/team-history",
+        "/api/leave-requests/team-history",
         {
           headers: {
             Authorization: `Bearer ${token}`

@@ -13,8 +13,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                String allowedOrigins = System.getenv("ALLOWED_ORIGINS") != null
+                        ? System.getenv("ALLOWED_ORIGINS")
+                        : "http://localhost:5173,http://localhost";
+
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins(allowedOrigins.split(","))
                         .allowedMethods("*")
                         .allowedHeaders("*");
             }

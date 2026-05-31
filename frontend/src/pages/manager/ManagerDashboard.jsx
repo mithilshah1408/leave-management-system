@@ -23,7 +23,7 @@ function ManagerDashboard() {
     try {
 
       const response = await fetch(
-        "http://localhost:8080/api/leave-approvals/pending",
+        "/api/leave-approvals/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,

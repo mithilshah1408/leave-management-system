@@ -220,7 +220,18 @@ http://localhost:8080/swagger-ui/index.html
 - JWT token is required for all protected endpoints
 - Leave balance updates only after a request is approved
 - Holidays are excluded from leave day calculations
-  
+
+---
+
+## 💡 Future Improvements
+
+- Email notifications for approvals/rejections
+- File attachments for medical/supporting documents
+- Dashboard analytics and charts
+- Mobile-responsive UI improvements
+- Role-based UI enhancements
+
+---
 
 ## 🧠 What This Project Demonstrates
 

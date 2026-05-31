@@ -1,98 +1,150 @@
 /* Page background */
 .login-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #1e293b, #334155);
-    font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Card with entry animation */
+.login-card {
+  background: white;
+  padding: 40px;
+  width: 380px;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeSlideIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Animation */
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Card with entry animation */
-  .login-card {
-    background: white;
-    padding: 40px;
-    width: 380px;
-    border-radius: 10px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-    animation: fadeSlideIn 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Inputs */
+.login-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  transition: border 0.2s ease;
+  box-sizing: border-box;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* Button */
+.login-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2563eb;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.login-button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Loading spinner */
+.login-button.loading {
+  background-color: #1d4ed8;
+  cursor: not-allowed;
+}
+
+.login-button.loading::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
   }
-  
-  /* Animation */
-  @keyframes fadeSlideIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Title */
-  .login-title {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #1e293b;
-    font-size: 22px;
-    font-weight: 600;
-  }
-  
-  /* Inputs */
-  .login-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-    font-size: 14px;
-    transition: border 0.2s ease;
-  }
-  
-  .login-input:focus {
-    outline: none;
-    border-color: #2563eb;
-  }
-  
-  /* Button */
-  .login-button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 6px;
-    border: none;
-    background-color: #2563eb;
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-  
-  .login-button:hover {
-    background-color: #1d4ed8;
-  }
-  
-  /* Loading spinner */
-  .login-button.loading {
-    background-color: #1d4ed8;
-    cursor: not-allowed;
-  }
-  
-  .login-button.loading::after {
-    content: "";
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    width: 14px;
-    height: 14px;
-    border: 2px solid white;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    transform: translateY(-50%);
-    animation: spin 0.6s linear infinite;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: translateY(-50%) rotate(360deg);
-    }
-  }
+}
+
+/* Demo credentials section */
+.demo-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.demo-heading {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.demo-users {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.demo-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-chip:hover {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.demo-password {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.demo-password span {
+  color: #475569;
+  font-weight: 600;
+}

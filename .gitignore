@@ -28,3 +28,7 @@ replay_pid*
 
 # IntelliJ
 .idea/
+
+.env
+frontend/dist/
+frontend/node_modules/

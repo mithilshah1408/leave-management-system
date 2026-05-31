@@ -22,7 +22,7 @@ function LeaveApprovalPage() {
     try {
 
       const response = await fetch(
-        "http://localhost:8080/api/leave-approvals/pending",
+        "/api/leave-approvals/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -49,7 +49,7 @@ function LeaveApprovalPage() {
     try {
 
       await fetch(
-        `http://localhost:8080/api/leave-approvals/${id}/approve`,
+        `/api/leave-approvals/${id}/approve`,
         {
           method: "PATCH",
           headers: {
@@ -79,7 +79,7 @@ function LeaveApprovalPage() {
     try {
 
       await fetch(
-        `http://localhost:8080/api/leave-approvals/${selectedLeaveId}/reject`,
+        `/api/leave-approvals/${selectedLeaveId}/reject`,
         {
           method: "PATCH",
           headers: {
