@@ -11,19 +11,18 @@ INSERT INTO roles (id, name) VALUES
 -- LEAVE TYPES
 -- =========================
 INSERT INTO leave_types (id, carry_forward_allowed, description, max_days_per_year, name, status) VALUES
-                                                                                                      (1, 0, 'Paid leave with salary', 15, 'Paid Leave', 'ACTIVE'),
-                                                                                                      (2, 0, 'Leave when sick', 5, 'Sick Leave', 'ACTIVE'),
-                                                                                                      (3, 0, 'Personal use leave', 10, 'Casual Leave', 'ACTIVE'),
-                                                                                                      (4, 0, 'Maternity leave', 90, 'Maternity Leave', 'ACTIVE'),
-                                                                                                      (5, 1, 'Emergency situations', 5, 'Emergency Leave', 'ACTIVE'),
-                                                                                                      (6, 0, 'Paternity leave', 10, 'Paternity Leave', 'ACTIVE'),
-                                                                                                      (7, 0, 'Bereavement leave', 5, 'Bereavement Leave', 'ACTIVE'),
-                                                                                                      (8, 1, 'Compensatory leave for extra work', 10, 'Compensatory Leave', 'ACTIVE'),
-                                                                                                      (9, 0, 'Study/education leave', 15, 'Study Leave', 'ACTIVE'),
-                                                                                                      (10, 0, 'Long-term sabbatical', 60, 'Sabbatical Leave', 'ACTIVE'),
-                                                                                                      (11, 0, 'Volunteer work leave', 3, 'Volunteer Leave', 'ACTIVE'),
-                                                                                                      (12, 0, 'Mental health leave', 5, 'Mental Health Leave', 'ACTIVE');
-
+                                                                                                      (1, false, 'Paid leave with salary', 15, 'Paid Leave', 'ACTIVE'),
+                                                                                                      (2, false, 'Leave when sick', 5, 'Sick Leave', 'ACTIVE'),
+                                                                                                      (3, false, 'Personal use leave', 10, 'Casual Leave', 'ACTIVE'),
+                                                                                                      (4, false, 'Maternity leave', 90, 'Maternity Leave', 'ACTIVE'),
+                                                                                                      (5, true, 'Emergency situations', 5, 'Emergency Leave', 'ACTIVE'),
+                                                                                                      (6, false, 'Paternity leave', 10, 'Paternity Leave', 'ACTIVE'),
+                                                                                                      (7, false, 'Bereavement leave', 5, 'Bereavement Leave', 'ACTIVE'),
+                                                                                                      (8, true, 'Compensatory leave for extra work', 10, 'Compensatory Leave', 'ACTIVE'),
+                                                                                                      (9, false, 'Study/education leave', 15, 'Study Leave', 'ACTIVE'),
+                                                                                                      (10, false, 'Long-term sabbatical', 60, 'Sabbatical Leave', 'ACTIVE'),
+                                                                                                      (11, false, 'Volunteer work leave', 3, 'Volunteer Leave', 'ACTIVE'),
+                                                                                                      (12, false, 'Mental health leave', 5, 'Mental Health Leave', 'ACTIVE');
 
 -- =========================
 -- HOLIDAYS

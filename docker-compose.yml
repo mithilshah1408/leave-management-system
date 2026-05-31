@@ -1,30 +1,21 @@
 services:
 
-  # ================================
-  # MySQL Database
-  # ================================
   db:
-    image: mysql:8.0
+    image: postgres:15
     container_name: lms-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: leave_management_db
-      MYSQL_USER: ${DB_USER:-lmsuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-lmspassword}
-    ports:
-      - "3306:3306"
+      POSTGRES_DB: leave_management_db
+      POSTGRES_USER: ${DB_USER:-lmsuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lmspassword}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-lmsuser}" ]
       interval: 10s
       timeout: 5s
       retries: 10
 
-  # ================================
-  # Spring Boot Backend
-  # ================================
   backend:
     build:
       context: ./backend
@@ -35,7 +26,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/leave_management_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/leave_management_db
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-lmsuser}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-lmspassword}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-create}
@@ -43,9 +34,6 @@ services:
     ports:
       - "8080:8080"
 
-  # ================================
-  # React Frontend (nginx)
-  # ================================
   frontend:
     build:
       context: ./frontend
@@ -58,5 +46,5 @@ services:
       - "80:80"
 
 volumes:
-  mysql_data:
+  postgres_data:
     driver: local

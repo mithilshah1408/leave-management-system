@@ -10,13 +10,13 @@ function Navbar() {
   };
 
   return (
-    <div className="navbar">
-      <div className="navbar-right">
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+      <div className="navbar">
+        <div className="navbar-right">
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </div>
-    </div>
   );
 }
 

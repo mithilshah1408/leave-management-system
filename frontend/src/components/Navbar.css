@@ -4,17 +4,19 @@
     background: #0f172a;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    padding: 0 5px;
+    justify-content: space-between;
+    padding: 0 16px;
     border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .navbar-right {
+    box-sizing: border-box;
+}
+
+.navbar-right {
     display: flex;
     align-items: center;
-  }
-  
-  .logout-button {
+    margin-left: auto;
+}
+
+.logout-button {
     padding: 6px 12px;
     font-size: 14px;
     border: none;
@@ -22,8 +24,25 @@
     color: white;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  .logout-button:hover {
+    white-space: nowrap;
+}
+
+.logout-button:hover {
     background: #dc2626;
-  }
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+}
