@@ -1,193 +1,43 @@
-/* Page Container */
+.employee-page { padding: 30px; max-width: 1000px; margin: 0 auto; }
+.employee-page h2 { margin-bottom: 20px; font-weight: 600; }
 
-.employee-page {
-  padding: 30px;
-  max-width: 1000px;
-  margin: 0 auto;
+.leave-form { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e5e7eb; max-width: 500px; }
+.leave-form label { display: block; margin-bottom: 6px; font-weight: 500; }
+.leave-form input, .leave-form select, .leave-form textarea {
+  width: 100%; padding: 8px 10px; margin-bottom: 15px;
+  border-radius: 5px; border: 1px solid #d1d5db; font-size: 14px; box-sizing: border-box;
 }
+.leave-form textarea { min-height: 80px; resize: vertical; }
 
-.employee-page h2 {
-  margin-bottom: 20px;
-  font-weight: 600;
-}
+.submit-btn { background: #2563eb; color: white; border: none; padding: 9px 16px; border-radius: 5px; cursor: pointer; }
+.submit-btn:hover { background: #1d4ed8; }
+.form-message { margin-top: 10px; font-size: 14px; }
 
-
-/* Form Styling */
-
-.leave-form {
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  max-width: 500px;
-}
-
-.leave-form label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.leave-form input,
-.leave-form select,
-.leave-form textarea {
-  width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-}
-
-.leave-form textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-
-/* Submit Button */
-
-.submit-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 9px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.submit-btn:hover {
-  background: #1d4ed8;
-}
-
-
-/* Form Message */
-
-.form-message {
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-
-/* Leave Table */
+.table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 .leave-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  width: 100%; border-collapse: collapse; margin-top: 20px; background: white;
+  border-radius: 8px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.08); min-width: 600px;
 }
+.leave-table th { background: #f1f5f9; padding: 12px; text-align: left; font-weight: 600; }
+.leave-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+.leave-table tr:last-child td { border-bottom: none; }
+.leave-table tr:hover { background: #f9fafb; }
 
+.status { padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; text-transform: capitalize; }
+.status.pending { background: #facc15; color: #000; }
+.status.approved { background: #22c55e; color: white; }
+.status.rejected { background: #ef4444; color: white; }
+.status.cancelled { background: #64748b; color: white; }
 
-/* Table Header */
+.employee-reason { font-size: 13px; color: #374151; }
+.manager-remark { font-size: 13px; color: #b91c1c; margin-top: 4px; font-weight: 500; }
 
-.leave-table th {
-  background: #f1f5f9;
-  padding: 12px;
-  text-align: left;
-  font-weight: 600;
-}
+.cancel-btn { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+.cancel-btn:hover { background: #b91c1c; }
+.empty-state { margin-top: 20px; color: #6b7280; font-style: italic; }
 
-
-/* Table Rows */
-
-.leave-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
-  vertical-align: top;
-}
-
-.leave-table tr:last-child td {
-  border-bottom: none;
-}
-
-.leave-table tr:hover {
-  background: #f9fafb;
-}
-
-
-/* Status Badges */
-
-.status {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-
-/* Pending */
-
-.status.pending {
-  background: #facc15;
-  color: #000;
-}
-
-
-/* Approved */
-
-.status.approved {
-  background: #22c55e;
-  color: white;
-}
-
-
-/* Rejected */
-
-.status.rejected {
-  background: #ef4444;
-  color: white;
-}
-
-
-/* Cancelled */
-
-.status.cancelled {
-  background: #64748b;
-  color: white;
-}
-
-
-/* REASON DISPLAY */
-
-.employee-reason {
-  font-size: 13px;
-  color: #374151;
-}
-
-.manager-remark {
-  font-size: 13px;
-  color: #b91c1c;
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-
-/* Cancel Button */
-
-.cancel-btn {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.cancel-btn:hover {
-  background: #b91c1c;
-}
-
-
-/* Empty State */
-
-.empty-state {
-  margin-top: 20px;
-  color: #6b7280;
-  font-style: italic;
+@media (max-width: 768px) {
+  .employee-page { padding: 16px; }
+  .leave-form { max-width: 100%; }
 }

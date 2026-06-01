@@ -1,50 +1,20 @@
-.team-history-page {
-    padding: 30px;
-    background: #f6f8fc;
-    min-height: 100vh;
-  }
-  
-  .team-history-page h2 {
-    margin-bottom: 5px;
-    font-weight: 600;
-  }
-  
-  .team-history-page p {
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .history-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  
-  .history-table thead {
-    background: #f1f4f9;
-  }
-  
-  .history-table th {
-    text-align: left;
-    padding: 14px;
-    font-weight: 600;
-    color: #444;
-    font-size: 14px;
-  }
-  
-  .history-table td {
-    padding: 14px;
-    font-size: 14px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .history-table tr:hover {
-    background: #f9fbff;
-  }
-  
-  .history-table tbody tr:last-child td {
-    border-bottom: none;
-  }
+.team-history-page { padding: 30px; background: #f6f8fc; min-height: 100vh; }
+.team-history-page h2 { margin-bottom: 5px; font-weight: 600; }
+.team-history-page p { color: #666; margin-bottom: 20px; }
+
+.table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.history-table {
+  width: 100%; border-collapse: collapse; background: white;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); min-width: 500px;
+}
+.history-table thead { background: #f1f4f9; }
+.history-table th { text-align: left; padding: 14px; font-weight: 600; color: #444; font-size: 14px; }
+.history-table td { padding: 14px; font-size: 14px; border-bottom: 1px solid #eee; }
+.history-table tr:hover { background: #f9fbff; }
+.history-table tbody tr:last-child td { border-bottom: none; }
+
+@media (max-width: 768px) {
+  .team-history-page { padding: 16px; }
+}

@@ -1,23 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
-function Navbar() {
-  const navigate = useNavigate();
+function Navbar({ onMenuToggle }) {
+    const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/");
+    };
 
-  return (
-      <div className="navbar">
-        <div className="navbar-right">
-          <button className="logout-button" onClick={handleLogout}>
-            Logout
-          </button>
+    return (
+        <div className="navbar">
+            <button className="menu-toggle" onClick={onMenuToggle} aria-label="Toggle menu">
+                ☰
+            </button>
+            <div className="navbar-right">
+                <button className="logout-button" onClick={handleLogout}>
+                    Logout
+                </button>
+            </div>
         </div>
-      </div>
-  );
+    );
 }
 
 export default Navbar;

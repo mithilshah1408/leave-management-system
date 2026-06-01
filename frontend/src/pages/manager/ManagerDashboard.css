@@ -1,141 +1,41 @@
-.manager-dashboard {
-  padding: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+.manager-dashboard { padding: 30px; max-width: 1200px; margin: 0 auto; }
+.manager-dashboard h2 { margin-bottom: 5px; font-size: 26px; }
+.manager-dashboard p { color: #666; margin-bottom: 25px; }
 
-/* HEADER */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 30px; }
+.stat-card { background: white; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5; }
+.stat-card h3 { font-size: 15px; color: #777; margin-bottom: 8px; }
+.stat-card p { font-size: 28px; font-weight: 600; color: #222; }
 
-.manager-dashboard h2 {
-  margin-bottom: 5px;
-  font-size: 26px;
-}
+.section-title { margin-top: 20px; margin-bottom: 15px; font-size: 20px; }
 
-.manager-dashboard p {
-  color: #666;
-  margin-bottom: 25px;
-}
+.actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 30px; }
+.action-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e5e5; cursor: pointer; transition: all 0.15s ease; }
+.action-card:hover { transform: translateY(-2px); border-color: #ccc; }
+.action-card h4 { margin-bottom: 6px; }
+.action-card p { font-size: 14px; color: #777; }
 
+.table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-/* STATS SECTION */
+.requests-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 6px; overflow: hidden; min-width: 500px; }
+.requests-table th { text-align: left; background: #f5f5f5; padding: 12px; font-weight: 600; }
+.requests-table td { padding: 12px; border-bottom: 1px solid #eee; }
+.requests-table tr:hover { background: #fafafa; }
+.requests-table button { background: #007bff; border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+.requests-table button:hover { background: #0056b3; }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  border: 1px solid #e5e5e5;
-}
-
-.stat-card h3 {
-  font-size: 15px;
-  color: #777;
-  margin-bottom: 8px;
-}
-
-.stat-card p {
-  font-size: 28px;
-  font-weight: 600;
-  color: #222;
-}
-
-
-/* QUICK ACTIONS */
-
-.section-title {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  font-size: 20px;
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-bottom: 30px;
-}
-
-.action-card {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.action-card:hover {
-  transform: translateY(-2px);
-  border-color: #ccc;
-}
-
-.action-card h4 {
-  margin-bottom: 6px;
-}
-
-.action-card p {
-  font-size: 14px;
-  color: #777;
-}
-
-
-/* RECENT REQUEST TABLE */
-
-.requests-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: white;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.requests-table th {
-  text-align: left;
-  background: #f5f5f5;
-  padding: 12px;
-  font-weight: 600;
-}
-
-.requests-table td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.requests-table tr:hover {
-  background: #fafafa;
-}
-
-.requests-table button {
-  background: #007bff;
-  border: none;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.requests-table button:hover {
-  background: #0056b3;
-}
-
-
-/* RESPONSIVE */
+.status { padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 600; }
+.status.pending { background: #fff3cd; }
+.status.approved { background: #d4edda; }
+.status.rejected { background: #f8d7da; }
 
 @media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .actions-grid { grid-template-columns: 1fr; }
+}
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .actions-grid {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 768px) {
+  .manager-dashboard { padding: 16px; }
+  .manager-dashboard h2 { font-size: 20px; }
+  .stats-grid { grid-template-columns: 1fr; }
 }

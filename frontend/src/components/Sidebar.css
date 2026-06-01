@@ -5,29 +5,59 @@
     color: white;
     display: flex;
     flex-direction: column;
-  }
-  
-  .sidebar-header {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
     padding: 20px;
     font-size: 18px;
     font-weight: bold;
     border-bottom: 1px solid #334155;
-  }
-  
-  .sidebar-nav {
+}
+
+.sidebar-nav {
     display: flex;
     flex-direction: column;
     padding: 15px;
-  }
-  
-  .sidebar-nav a {
+}
+
+.sidebar-nav a {
     color: white;
     text-decoration: none;
-    padding: 8px 5px;
+    padding: 10px 8px;
     font-size: 14px;
     border-radius: 4px;
-  }
-  
-  .sidebar-nav a:hover {
+}
+
+.sidebar-nav a:hover {
     background: #334155;
-  }
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 200;
+        width: 260px;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 199;
+    }
+}

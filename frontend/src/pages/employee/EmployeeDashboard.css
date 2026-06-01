@@ -1,87 +1,28 @@
-.employee-dashboard{
-  padding:30px;
-}
+.employee-dashboard { padding: 30px; }
 
-.section-title{
-  margin-top:35px;
-  margin-bottom:15px;
-}
+.section-title { margin-top: 35px; margin-bottom: 15px; }
 
-/* Summary cards */
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.summary-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+.summary-card p { font-size: 26px; font-weight: bold; }
 
-.summary-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
+.actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.action-card { background: #f4f6fb; padding: 20px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+.action-card:hover { background: #e9edf6; }
 
-.summary-card{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 3px 8px rgba(0,0,0,0.1);
-}
+.table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-.summary-card p{
-  font-size:26px;
-  font-weight:bold;
-}
+.requests-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+.requests-table th, .requests-table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+.requests-table th { background: #f7f7f7; }
 
-/* Actions */
+.status { padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 600; }
+.status.pending { background: #fff3cd; }
+.status.approved { background: #d4edda; }
+.status.rejected { background: #f8d7da; }
 
-.actions-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:20px;
-}
-
-.action-card{
-  background:#f4f6fb;
-  padding:20px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.action-card:hover{
-  background:#e9edf6;
-}
-
-/* Requests table */
-
-.requests-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.requests-table th,
-.requests-table td{
-  padding:12px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
-}
-
-.requests-table th{
-  background:#f7f7f7;
-}
-
-/* Status badges */
-
-.status{
-  padding:4px 8px;
-  border-radius:5px;
-  font-size:12px;
-  font-weight:600;
-}
-
-.status.pending{
-  background:#fff3cd;
-}
-
-.status.approved{
-  background:#d4edda;
-}
-
-.status.rejected{
-  background:#f8d7da;
+@media (max-width: 768px) {
+  .employee-dashboard { padding: 16px; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .actions-grid { grid-template-columns: 1fr; }
 }
