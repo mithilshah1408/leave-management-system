@@ -2,6 +2,10 @@
 
 A full-stack Leave Management System built using **Spring Boot** and **React (Vite)** that automates employee leave application, approval workflows, and leave tracking within an organization.
 
+🌐 **Live Demo:** [https://lms-frontend-zqmz.onrender.com](https://lms-frontend-zqmz.onrender.com)
+
+> ⚠️ Hosted on Render's free tier — first load may take ~30 seconds if the service is sleeping.
+
 ---
 
 ## 🚀 Features
@@ -53,18 +57,19 @@ leave-management-system/
 - Spring Boot
 - Spring Security
 - Spring Data JPA (Hibernate)
-- MySQL 8
+- PostgreSQL
 
 ### Frontend
 - React 19
 - Vite
 - Axios
-- CSS
+- CSS (mobile responsive)
 
 ### Infrastructure
 - Docker + Docker Compose
 - Nginx (serves frontend + proxies API requests)
-- MySQL (persistent volume)
+- PostgreSQL (persistent volume)
+- Deployed on Render
 
 ---
 
@@ -78,6 +83,7 @@ leave-management-system/
 - Transaction management
 - Role-based authorization
 - Containerized deployment with Docker
+- Mobile-responsive UI with sidebar navigation
 
 ---
 
@@ -90,7 +96,7 @@ leave-management-system/
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/leave-management-system.git
+git clone https://github.com/mithilshah1408/leave-management-system.git
 cd leave-management-system
 
 # 2. Set up environment variables
@@ -103,7 +109,7 @@ docker-compose up --build
 
 App runs at: **http://localhost**
 
-All three services (frontend, backend, MySQL) start automatically and are wired together. No separate setup needed.
+All three services (frontend, backend, PostgreSQL) start automatically and are wired together. No separate setup needed.
 
 > **First run:** `JPA_DDL_AUTO=create` in `.env` creates the schema and seeds demo data.
 > **Subsequent runs:** Change to `JPA_DDL_AUTO=update` to preserve your data across restarts.
@@ -116,13 +122,13 @@ All three services (frontend, backend, MySQL) start automatically and are wired 
 - Java 21+
 - Maven
 - Node.js v16+
-- MySQL
+- PostgreSQL
 
 ### Backend
 
 ```bash
 cd backend
-# Update spring.datasource.password in application.properties
+# Update application.properties with your PostgreSQL credentials
 mvn clean install
 mvn spring-boot:run
 ```
@@ -228,7 +234,6 @@ http://localhost:8080/swagger-ui/index.html
 - Email notifications for approvals/rejections
 - File attachments for medical/supporting documents
 - Dashboard analytics and charts
-- Mobile-responsive UI improvements
 - Role-based UI enhancements
 
 ---
@@ -240,6 +245,7 @@ http://localhost:8080/swagger-ui/index.html
 - Business logic implementation (leave workflow)
 - Full-stack integration
 - Containerized deployment with Docker
+- Mobile-responsive UI design
 - Clean and scalable architecture
 
 ---
