@@ -1,40 +1,36 @@
 # 🏢 Leave Management System
 
-A full-stack Leave Management System built using **Spring Boot** and **React (Vite)** that automates employee leave application, approval workflows, and leave tracking within an organization.
+A full-stack Leave Management System built with **Spring Boot** and **React (Vite)** that automates employee leave applications, approval workflows, and leave tracking within an organization.
 
-🌐 **Live Demo:** [https://lms-frontend-zqmz.onrender.com](https://lms-frontend-zqmz.onrender.com)
-
-> ⚠️ Hosted on Render's free tier — first load may take ~30 seconds if the service is sleeping.
+🌐 **Live Demo:** https://lms-frontend-zqmz.onrender.com
 
 ---
 
 ## 🚀 Features
 
 ### 👨‍💼 Employee
-- Apply for leave
-- View leave balance
-- View leave history
-- Cancel leave requests (before approval)
+- Apply for leave with optional reason
+- View leave balances (allocated, used, remaining) per leave type
+- View full leave history with manager remarks
+- Cancel pending leave requests
 
 ### 👨‍💻 Manager
-- View team leave requests
-- Approve or reject leave requests
-- Add remarks for approval/rejection
+- View and action team leave requests (approve / reject)
+- Add remarks on approval or rejection
+- View team leave history with employee reasons and manager notes
+- Dashboard showing pending requests, team on leave today, and monthly activity
 
 ### 🧑‍💼 Admin (HR)
-- Manage employees
-- Configure leave types (Casual, Sick, etc.)
-- Manage holidays
-- View organization-wide reports
+- Create and manage employee accounts (Employee, Manager, Admin roles)
+- Configure leave types with yearly limits — changes propagate to all existing balances immediately
+- Manage public holidays
+- View and adjust leave balances per employee
 
----
-
-## 🔐 Authentication & Security
-
+### 🔐 Authentication & Security
 - JWT-based authentication
 - Role-based access control (EMPLOYEE, MANAGER, ADMIN)
 - Password encryption using BCrypt
-- Secure REST APIs
+- Secure REST APIs with Spring Security
 
 ---
 
@@ -42,9 +38,9 @@ A full-stack Leave Management System built using **Spring Boot** and **React (Vi
 
 ```
 leave-management-system/
-├── frontend/          → React (Vite) client
-├── backend/           → Spring Boot REST API
-├── docker-compose.yml → Orchestrates all three services
+├── frontend/           → React (Vite) client
+├── backend/            → Spring Boot REST API
+├── docker-compose.yml  → Orchestrates all three services
 └── README.md
 ```
 
@@ -52,31 +48,27 @@ leave-management-system/
 
 ## 🛠 Tech Stack
 
-### Backend
+**Backend**
 - Java 21
-- Spring Boot
-- Spring Security
-- Spring Data JPA (Hibernate)
+- Spring Boot, Spring Security, Spring Data JPA (Hibernate)
 - PostgreSQL
+- JWT authentication
 
-### Frontend
-- React 19
-- Vite
+**Frontend**
+- React 19, Vite
 - Axios
 - CSS (mobile responsive)
 
-### Infrastructure
+**Infrastructure**
 - Docker + Docker Compose
 - Nginx (serves frontend + proxies API requests)
-- PostgreSQL (persistent volume)
-- Deployed on Render
+- PostgreSQL with persistent volume
 
 ---
 
 ## 📊 Key Concepts Implemented
 
-- RESTful API design
-- DTO pattern (no direct entity exposure)
+- RESTful API design with DTO pattern
 - Entity relationships (One-to-Many, Many-to-One)
 - Pagination & filtering
 - Global exception handling (`@ControllerAdvice`)
@@ -84,26 +76,20 @@ leave-management-system/
 - Role-based authorization
 - Containerized deployment with Docker
 - Mobile-responsive UI with sidebar navigation
+- Code splitting and lazy loading (React)
 
 ---
 
 ## ⚙️ Running with Docker (Recommended)
 
-### Prerequisites
-- Docker Desktop installed and running
-
-### Steps
+**Prerequisites:** Docker Desktop installed and running
 
 ```bash
 # 1. Clone the repo
 git clone https://github.com/mithilshah1408/leave-management-system.git
 cd leave-management-system
 
-# 2. Set up environment variables
-cp .env.example .env
-# Open .env and update passwords if needed
-
-# 3. Start everything
+# 2. Start everything
 docker-compose up --build
 ```
 
@@ -111,54 +97,44 @@ App runs at: **http://localhost**
 
 All three services (frontend, backend, PostgreSQL) start automatically and are wired together. No separate setup needed.
 
-> **First run:** `JPA_DDL_AUTO=create` in `.env` creates the schema and seeds demo data.
-> **Subsequent runs:** Change to `JPA_DDL_AUTO=update` to preserve your data across restarts.
+> **First run:** `JPA_DDL_AUTO=create` in `docker-compose.yml` creates the schema and seeds demo data.
+> **Subsequent runs:** It defaults to `update` — your data persists across restarts automatically.
 
 ---
 
 ## ⚙️ Manual Setup (Without Docker)
 
-### Prerequisites
-- Java 21+
-- Maven
-- Node.js v16+
-- PostgreSQL
+**Prerequisites:** Java 21+, Maven, Node.js v18+, PostgreSQL
 
-### Backend
-
+**Backend**
 ```bash
 cd backend
 # Update application.properties with your PostgreSQL credentials
 mvn clean install
 mvn spring-boot:run
+# Runs at http://localhost:8080
 ```
 
-Runs at: `http://localhost:8080`
-
-### Frontend
-
+**Frontend**
 ```bash
 cd frontend
 npm install
 npm run dev
+# Runs at http://localhost:5173
 ```
-
-Runs at: `http://localhost:5173`
 
 ---
 
 ## 🔑 Demo Credentials
 
-The login page includes quick-fill buttons for each role — just click the role and hit Login.
+The login page includes quick-fill buttons for each role — click the role chip and hit Login.
 
-| Role     | Email                  | Password    |
-|----------|------------------------|-------------|
-| Admin    | admin@test.com         | password123 |
-| Manager  | manager@test.com       | password123 |
-| Employee | employee1@test.com     | password123 |
-| Employee | employee2@test.com     | password123 |
-
-> Users are seeded automatically on first startup via `data.sql`.
+| Role     | Email                | Password    |
+|----------|----------------------|-------------|
+| Admin    | admin@test.com       | password123 |
+| Manager  | manager@test.com     | password123 |
+| Employee | employee1@test.com   | password123 |
+| Employee | employee2@test.com   | password123 |
 
 ---
 
@@ -173,68 +149,17 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 📸 Screenshots
 
-### 🔐 Login
-![Login](./screenshots/LoginPage.png)
-
-### 📊 Employee Dashboard
-![Employee Dashboard](./screenshots/EmployeeDashboard.png)
-
-### 📝 Apply for Leave
-![Apply Leave](./screenshots/EmployeeLeaveApplication.png)
-
-### 📜 Leave History
-![Leave History](./screenshots/EmployeeLeaveHistory.png)
-
-### 📋 Manager Dashboard
-![Manager Dashboard](./screenshots/ManagerDashboard.png)
-
-### ✅ Leave Approval
-![Leave Approval](./screenshots/ManagerLeaveApproval.png)
-
-### 👥 Team Leave History
-![Team History](./screenshots/ManagerTeamLeaveHistory.png)
-
-### 🛠 Admin Dashboard
-![Admin Dashboard](./screenshots/AdminDashboard.png)
-
-### 👨‍👩‍👧 Employee Management
-![Employee Management](./screenshots/AdminsEmployeeManagement.png)
-
-### 🏖 Leave Type Management
-![Leave Types](./screenshots/AdminLeaveTypeManagement.png)
-
-### 📊 Leave Balance Management
-![Leave Balances](./screenshots/AdminLeaveBalanceManagement.png)
-
-### 🎉 Holiday Management
-![Holidays](./screenshots/AdminHolidayManagement.png)
-
----
-
-## 🎥 Demo Video
-
-[![Watch Demo](https://img.youtube.com/vi/lZSX2dPrckc/0.jpg)](https://youtu.be/lZSX2dPrckc)
-
-> Covers Admin, Manager, and Employee flows end-to-end.
+<!-- Screenshots coming soon -->
 
 ---
 
 ## ⚠️ Important Notes
 
 - On first run, tables are created and demo data is seeded automatically
-- Change `JPA_DDL_AUTO` to `update` after first run to persist data
 - JWT token is required for all protected endpoints
-- Leave balance updates only after a request is approved
-- Holidays are excluded from leave day calculations
-
----
-
-## 💡 Future Improvements
-
-- Email notifications for approvals/rejections
-- File attachments for medical/supporting documents
-- Dashboard analytics and charts
-- Role-based UI enhancements
+- Leave balances update immediately after a request is approved
+- Changing max days on a leave type propagates to all existing employee balances instantly
+- Admin and Manager accounts do not have leave balances — leave tracking is for employees only
 
 ---
 
@@ -242,17 +167,18 @@ http://localhost:8080/swagger-ui/index.html
 
 - Real-world enterprise backend design
 - Authentication & authorization flows
-- Business logic implementation (leave workflow)
-- Full-stack integration
-- Containerized deployment with Docker
+- Business logic implementation (leave approval workflow)
+- Full-stack integration (Spring Boot + React)
+- Containerized deployment with Docker + Nginx
 - Mobile-responsive UI design
-- Clean and scalable architecture
+- Clean, scalable architecture with separation of concerns
 
 ---
 
 ## 📌 Author
 
 **Mithil Shah**
+[GitHub](https://github.com/mithilshah1408) 
 
 ---
 
