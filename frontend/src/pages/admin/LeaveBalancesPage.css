@@ -59,3 +59,4 @@
 .modal-footer .btn-secondary { background: #e0e0e0; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
 .modal-footer .btn-primary { background: #007bff; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
 .modal-footer .btn-primary:hover { background: #0056b3; }
+.error-banner { background: #fee2e2; color: #991b1b; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }

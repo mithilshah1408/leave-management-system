@@ -6,6 +6,12 @@
 .stat-card { background: white; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5; }
 .stat-card h3 { font-size: 15px; color: #777; margin-bottom: 8px; }
 .stat-card p { font-size: 28px; font-weight: 600; color: #222; }
+.stat-card.stat-pending  { border-left: 4px solid #f59e0b; }
+.stat-card.stat-today    { border-left: 4px solid #22c55e; }
+.stat-card.stat-monthly  { border-left: 4px solid #2563eb; }
+.stat-card h3 { font-size: 13px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+.stat-card p  { font-size: 30px; font-weight: 700; color: #1e293b; margin: 0; }
+
 
 .section-title { margin-top: 20px; margin-bottom: 15px; font-size: 20px; }
 
@@ -39,3 +45,11 @@
   .manager-dashboard h2 { font-size: 20px; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+.error-banner { background: #fee2e2; color: #991b1b; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+.review-btn { background: #2563eb; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+.review-btn:hover { background: #1d4ed8; }
+.reason-cell { max-width: 220px; font-size: 13px; color: #374151; }
+.status { padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 600; }
+.status.pending { background: #fef3c7; color: #92400e; }
+.status.approved { background: #d1fae5; color: #065f46; }
+.status.rejected { background: #fee2e2; color: #991b1b; }

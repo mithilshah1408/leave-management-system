@@ -29,10 +29,16 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/leave_management_db
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-lmsuser}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-lmspassword}
-      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-create}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost}
     ports:
       - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/auth/ping || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   frontend:
     build:
@@ -41,7 +47,8 @@ services:
     container_name: lms-frontend
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "80:80"
 

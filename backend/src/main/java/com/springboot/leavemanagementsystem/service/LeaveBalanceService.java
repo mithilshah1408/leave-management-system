@@ -11,6 +11,7 @@ import springboot.leavemanagementsystem.entity.User;
 import springboot.leavemanagementsystem.repository.LeaveBalanceRepository;
 import springboot.leavemanagementsystem.repository.LeaveTypeRepository;
 import springboot.leavemanagementsystem.repository.UserRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,103 +25,97 @@ public class LeaveBalanceService {
     public LeaveBalanceService(
             LeaveBalanceRepository leaveBalanceRepository,
             UserRepository userRepository,
-            LeaveTypeRepository leaveTypeRepository
-    ) {
+            LeaveTypeRepository leaveTypeRepository) {
         this.leaveBalanceRepository = leaveBalanceRepository;
         this.userRepository = userRepository;
         this.leaveTypeRepository = leaveTypeRepository;
     }
 
-    /*
-     * Fetch paginated leave balances with optional user filter
-     */
+    /** Admin: paginated balances with optional user filter */
     @Transactional
-    public Page<LeaveBalanceDto> getBalances(
-            Long userId,
-            Integer year,
-            Pageable pageable
-    ) {
-
-        // DEFAULT YEAR
+    public Page<LeaveBalanceDto> getBalances(Long userId, Integer year, Pageable pageable) {
         int targetYear = (year != null) ? year : LocalDate.now().getYear();
-
-        // ENSURE DATA EXISTS
         ensureYearInitialized(targetYear);
 
         Page<LeaveBalance> page;
-
         if (userId != null) {
-            page = leaveBalanceRepository
-                    .findByUser_IdAndYear(userId, targetYear, pageable);
+            page = leaveBalanceRepository.findByUser_IdAndYear(userId, targetYear, pageable);
         } else {
-            page = leaveBalanceRepository
-                    .findByYear(targetYear, pageable);
+            page = leaveBalanceRepository.findByYear(targetYear, pageable);
         }
-
         return page.map(this::mapToDto);
     }
 
-    /*
-     * Ensure leave balances exist for given year (AUTO FIX)
-     */
+    /** Employee: get own balances for current year, auto-initializing if missing */
+    @Transactional
+    public List<LeaveBalanceDto> getMyBalances(String email) {
+        User employee = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+
+        int currentYear = LocalDate.now().getYear();
+        ensureYearInitializedForUser(employee, currentYear);
+
+        List<LeaveBalance> balances = leaveBalanceRepository.findByUserAndYear(employee, currentYear);
+        return balances.stream().map(this::mapToDto).toList();
+    }
+
+    /** Initialize balances for ALL employees for a given year */
     @Transactional
     public void ensureYearInitialized(int year) {
-
-        List<User> users = userRepository.findAll();
+        List<User> employees = userRepository.findAll().stream()
+                .filter(u -> u.getRole().getName().equals("EMPLOYEE"))
+                .toList();
         List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
 
-        for (User user : users) {
+        for (User employee : employees) {
             for (LeaveType leaveType : leaveTypes) {
-
                 leaveBalanceRepository
-                        .findByUserAndLeaveTypeAndYear(user, leaveType, year)
-                        .orElseGet(() -> {
-
-                            LeaveBalance balance = new LeaveBalance(
-                                    user,
-                                    leaveType,
-                                    year,
-                                    leaveType.getMaxDaysPerYear()
-                            );
-
-                            return leaveBalanceRepository.save(balance);
-                        });
+                        .findByUserAndLeaveTypeAndYear(employee, leaveType, year)
+                        .orElseGet(() -> leaveBalanceRepository.save(
+                                new LeaveBalance(employee, leaveType, year, leaveType.getMaxDaysPerYear())
+                        ));
             }
         }
     }
 
-    /*
-     * Manual yearly initialization (Admin trigger)
-     */
+    /** Initialize balances for a SINGLE employee (called after creating a new employee) */
+    @Transactional
+    public void ensureYearInitializedForUser(User user, int year) {
+        // Only employees get leave balances — never admin or manager
+        if (!user.getRole().getName().equals("EMPLOYEE")) return;
+
+        List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
+        for (LeaveType leaveType : leaveTypes) {
+            leaveBalanceRepository
+                    .findByUserAndLeaveTypeAndYear(user, leaveType, year)
+                    .orElseGet(() -> leaveBalanceRepository.save(
+                            new LeaveBalance(user, leaveType, year, leaveType.getMaxDaysPerYear())
+                    ));
+        }
+    }
+
+    /** Admin manual trigger */
     @Transactional
     public void initializeYear(Integer year) {
         ensureYearInitialized(year);
     }
 
-    /*
-     * Adjust total allocated leave
-     */
+    /** Adjust total allocated days for a specific balance */
     @Transactional
     public void adjustBalance(Long balanceId, Integer newTotalAllocated) {
-
         LeaveBalance balance = leaveBalanceRepository.findById(balanceId)
                 .orElseThrow(() -> new RuntimeException("Leave balance not found"));
 
         if (newTotalAllocated < balance.getUsedDays()) {
-            throw new RuntimeException("Cannot allocate less than used days");
+            throw new RuntimeException("Cannot allocate less than already used days (" + balance.getUsedDays() + ")");
         }
 
         balance.setTotalAllocated(newTotalAllocated);
         balance.setRemainingDays(newTotalAllocated - balance.getUsedDays());
-
         leaveBalanceRepository.save(balance);
     }
 
-    /*
-     * Convert entity to DTO
-     */
     private LeaveBalanceDto mapToDto(LeaveBalance lb) {
-
         return new LeaveBalanceDto(
                 lb.getId(),
                 lb.getUser().getId(),

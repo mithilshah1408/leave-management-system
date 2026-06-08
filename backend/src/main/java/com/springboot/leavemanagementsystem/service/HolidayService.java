@@ -22,97 +22,44 @@ public class HolidayService {
         this.holidayRepository = holidayRepository;
     }
 
-    // CREATE HOLIDAY
     public HolidayResponse createHoliday(CreateHolidayRequest request) {
-
-        validateDateRange(request.getStartDate(), request.getEndDate());
-        validateOverlappingHoliday(request.getStartDate(), request.getEndDate(), null);
-
-        Holiday holiday = new Holiday(
-                request.getName(),
-                request.getStartDate(),
-                request.getEndDate()
-        );
-
-        Holiday savedHoliday = holidayRepository.save(holiday);
-
-        return mapToDto(savedHoliday);
+        if (request.getStartDate().isAfter(request.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+        Holiday holiday = new Holiday(request.getName(), request.getStartDate(), request.getEndDate());
+        return mapToDto(holidayRepository.save(holiday));
     }
 
-    // UPDATE HOLIDAY
     public HolidayResponse updateHoliday(Long id, UpdateHolidayRequest request) {
-
         Holiday holiday = holidayRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Holiday not found"));
 
-        validateDateRange(request.getStartDate(), request.getEndDate());
-        validateOverlappingHoliday(request.getStartDate(), request.getEndDate(), id);
+        if (request.getStartDate().isAfter(request.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
 
         holiday.setName(request.getName());
         holiday.setStartDate(request.getStartDate());
         holiday.setEndDate(request.getEndDate());
 
-        Holiday updatedHoliday = holidayRepository.save(holiday);
-
-        return mapToDto(updatedHoliday);
+        return mapToDto(holidayRepository.save(holiday));
     }
 
-    // DELETE HOLIDAY
     public void deleteHoliday(Long id) {
-
         Holiday holiday = holidayRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Holiday not found"));
-
         holidayRepository.delete(holiday);
     }
 
-    // GET HOLIDAYS BY YEAR
     @Transactional(readOnly = true)
     public List<HolidayResponse> getHolidaysByYear(int year) {
-
         LocalDate startOfYear = LocalDate.of(year, 1, 1);
         LocalDate endOfYear = LocalDate.of(year, 12, 31);
-
-        List<Holiday> holidays = holidayRepository
-                .findOverlappingHolidays(startOfYear, endOfYear);
-
-        return holidays.stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+        return holidayRepository.findOverlappingHolidays(startOfYear, endOfYear)
+                .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    // VALIDATE DATE RANGE
-    private void validateDateRange(LocalDate startDate, LocalDate endDate) {
-
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date cannot be after end date");
-        }
-    }
-
-    // VALIDATE OVERLAPPING HOLIDAYS
-    private void validateOverlappingHoliday(LocalDate startDate, LocalDate endDate, Long currentHolidayId) {
-
-        List<Holiday> overlapping = holidayRepository
-                .findOverlappingHolidays(startDate, endDate);
-
-        if (!overlapping.isEmpty()) {
-
-            if (currentHolidayId == null) {
-                throw new IllegalArgumentException("Holiday overlaps with an existing holiday");
-            }
-
-            boolean conflict = overlapping.stream()
-                    .anyMatch(h -> !h.getId().equals(currentHolidayId));
-
-            if (conflict) {
-                throw new IllegalArgumentException("Holiday overlaps with an existing holiday");
-            }
-        }
-    }
-
-    // MAP ENTITY TO DTO
     private HolidayResponse mapToDto(Holiday holiday) {
-
         return new HolidayResponse(
                 holiday.getId(),
                 holiday.getName(),

@@ -61,3 +61,33 @@
 .modal-actions button { padding: 6px 14px; border-radius: 4px; cursor: pointer; }
 .save-btn { background: #2563eb; color: white; border: none; }
 .save-btn:hover { background: #1d4ed8; }
+/* Holiday Modal */
+.hm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.hm-modal { background: white; border-radius: 16px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: hm-up 0.2s ease; }
+@keyframes hm-up { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+
+.hm-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 0; }
+.hm-header h2 { font-size: 18px; font-weight: 700; color: #111827; margin: 0; }
+.hm-close { background: none; border: none; font-size: 18px; color: #6b7280; cursor: pointer; }
+.hm-close:hover { color: #111827; }
+
+.hm-form { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+.hm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hm-field { display: flex; flex-direction: column; gap: 5px; }
+.hm-field label { font-size: 13px; font-weight: 600; color: #374151; }
+.hm-field input { padding: 9px 12px; border-radius: 8px; border: 1.5px solid #d1d5db; font-size: 14px; }
+.hm-field input:focus { outline: none; border-color: #2563eb; }
+.hm-req { color: #ef4444; }
+.hm-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+.hm-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
+.hm-btn-cancel { background: #f3f4f6; color: #374151; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.hm-btn-cancel:hover { background: #e5e7eb; }
+.hm-btn-save { background: #2563eb; color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.hm-btn-save:hover { background: #1d4ed8; }
+.hm-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 480px) { .hm-row { grid-template-columns: 1fr; } }
+
+.page-empty { text-align: center; padding: 48px 20px; color: #6b7280; }
+.page-empty p { margin-bottom: 16px; font-size: 15px; }
+.duration-badge { background: #eff6ff; color: #2563eb; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }

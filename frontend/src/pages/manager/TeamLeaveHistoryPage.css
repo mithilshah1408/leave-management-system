@@ -18,3 +18,25 @@
 @media (max-width: 768px) {
   .team-history-page { padding: 16px; }
 }
+.error-banner { background: #fee2e2; color: #991b1b; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+.reason-cell { max-width: 200px; font-size: 13px; }
+.reason-text {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: #374151;
+}
+.manager-remark-text {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: #b91c1c;
+  font-weight: 500;
+}
+.status { padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 600; }
+.status.pending { background: #fef3c7; color: #92400e; }
+.status.approved { background: #d1fae5; color: #065f46; }
+.status.rejected { background: #fee2e2; color: #991b1b; }
+.status.cancelled { background: #f1f5f9; color: #475569; }

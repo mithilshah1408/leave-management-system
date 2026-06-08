@@ -1,6 +1,5 @@
 package springboot.leavemanagementsystem.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -62,7 +61,7 @@ public class User {
 
     @Column(nullable = false)
     @NotNull(message = "Joining date is required")
-    @PastOrPresent(message = "Joining date cannot be in the future")
+    // Removed @PastOrPresent — admins may onboard future-dated employees
     private LocalDate joiningDate;
 
     @CreationTimestamp
@@ -73,11 +72,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updateDateAndTime;
 
-    public User() {
+    public User() {}
 
-    }
-
-    public User(String firstName, String lastName, String username, String email, String password, Role role, UserStatus status, LocalDate joiningDate) {
+    public User(String firstName, String lastName, String username, String email,
+                String password, Role role, UserStatus status, LocalDate joiningDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -88,105 +86,43 @@ public class User {
         this.joiningDate = joiningDate;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getFullName() { return firstName + " " + lastName; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public String getUsername() {
-        return username;
-    }
+    public User getManager() { return manager; }
+    public void setManager(User manager) { this.manager = manager; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
-    public String getEmail() {
-        return email;
-    }
+    public UserStatus getStatus() { return status; }
+    public void setStatus(UserStatus status) { this.status = status; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public LocalDate getJoiningDate() { return joiningDate; }
+    public void setJoiningDate(LocalDate joiningDate) { this.joiningDate = joiningDate; }
 
-    public String getPassword() {
-        return password;
-    }
+    public LocalDateTime getCreateDate() { return createDate; }
+    public void setCreateDate(LocalDateTime createDate) { this.createDate = createDate; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public User getManager() {
-        return manager;
-    }
-
-    public void setManager(User manager) {
-        this.manager = manager;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
-
-    public LocalDate getJoiningDate() {
-        return joiningDate;
-    }
-
-    public void setJoiningDate(LocalDate joiningDate) {
-        this.joiningDate = joiningDate;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDateTime getUpdateDateAndTime() {
-        return updateDateAndTime;
-    }
-
-    public void setUpdateDateAndTime(LocalDateTime updateDateAndTime) {
-        this.updateDateAndTime = updateDateAndTime;
-    }
+    public LocalDateTime getUpdateDateAndTime() { return updateDateAndTime; }
+    public void setUpdateDateAndTime(LocalDateTime updateDateAndTime) { this.updateDateAndTime = updateDateAndTime; }
 
     @Override
     public boolean equals(Object o) {
@@ -195,23 +131,10 @@ public class User {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+    public int hashCode() { return Objects.hashCode(id); }
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                ", status=" + status +
-                ", joiningDate=" + joiningDate +
-                ", createDate=" + createDate +
-                ", updateDateAndTime=" + updateDateAndTime +
-                '}';
+        return "User{id=" + id + ", email='" + email + "', role=" + role + ", status=" + status + "}";
     }
 }

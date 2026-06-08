@@ -3,42 +3,76 @@ import api from "../../services/api";
 import MainLayout from "../../layout/MainLayout";
 import "./LeaveTypes.css";
 
+const EMPTY_FORM = { name: "", maxDaysPerYear: "", description: "", carryForwardAllowed: false };
+
 const LeaveTypesPage = () => {
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({ name: "", maxDaysPerYear: "", description: "", carryForwardAllowed: false });
-  const [showCreate, setShowCreate] = useState(false);
-  const [newLeave, setNewLeave] = useState({ name: "", maxDaysPerYear: "", description: "", carryForwardAllowed: false });
+  const [editModal, setEditModal] = useState(null);   // holds leave object being edited
+  const [createModal, setCreateModal] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchLeaveTypes = async () => {
     try {
       setLoading(true);
       const res = await api.get("/admin/leave-types");
-      setLeaveTypes(res.data);
-    } catch { alert("Failed to load leave types"); }
+      // Bug 5 fix: always sort by id so order never changes after edit
+      setLeaveTypes([...res.data].sort((a, b) => a.id - b.id));
+    } catch { setError("Failed to load leave types"); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { fetchLeaveTypes(); }, []);
 
-  const validateLeave = (data) => {
-    if (!data.name.trim()) { alert("Leave type name is required"); return false; }
-    if (data.maxDaysPerYear === "" || isNaN(data.maxDaysPerYear)) { alert("Max days is required"); return false; }
-    const days = Number(data.maxDaysPerYear);
-    if (days < 0) { alert("Max days must be 0 or greater"); return false; }
-    if (days > 365) { alert("Max days cannot exceed 365"); return false; }
-    return true;
+  const validate = (data) => {
+    if (!data.name.trim()) return "Name is required";
+    if (data.maxDaysPerYear === "" || isNaN(data.maxDaysPerYear)) return "Max days is required";
+    const d = Number(data.maxDaysPerYear);
+    if (d < 0) return "Max days cannot be negative";
+    if (d > 365) return "Max days cannot exceed 365";
+    return null;
   };
 
-  const handleCreate = async () => {
-    if (!validateLeave(newLeave)) return;
+  const openCreate = () => {
+    setForm(EMPTY_FORM);
+    setError("");
+    setCreateModal(true);
+  };
+
+  const openEdit = (leave) => {
+    setForm({ name: leave.name, maxDaysPerYear: leave.maxDaysPerYear, description: leave.description || "", carryForwardAllowed: leave.carryForwardAllowed });
+    setError("");
+    setEditModal(leave);
+  };
+
+  const closeModal = () => { setCreateModal(false); setEditModal(null); setError(""); };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const err = validate(form);
+    if (err) { setError(err); return; }
+    setSaving(true); setError("");
     try {
-      await api.post("/admin/leave-types", { name: newLeave.name.trim(), maxDaysPerYear: Number(newLeave.maxDaysPerYear), description: newLeave.description, carryForwardAllowed: newLeave.carryForwardAllowed });
-      setShowCreate(false);
-      setNewLeave({ name: "", maxDaysPerYear: "", description: "", carryForwardAllowed: false });
+      await api.post("/admin/leave-types", { name: form.name.trim(), maxDaysPerYear: Number(form.maxDaysPerYear), description: form.description, carryForwardAllowed: Boolean(form.carryForwardAllowed) });
+      setCreateModal(false);
       fetchLeaveTypes();
-    } catch (err) { alert(err.response?.data?.message || "Failed to create leave type"); }
+    } catch (e) { setError(e.response?.data?.message || "Failed to create leave type"); }
+    finally { setSaving(false); }
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    const err = validate(form);
+    if (err) { setError(err); return; }
+    setSaving(true); setError("");
+    try {
+      await api.put(`/admin/leave-types/${editModal.id}`, { name: form.name.trim(), maxDaysPerYear: Number(form.maxDaysPerYear), description: form.description, carryForwardAllowed: Boolean(form.carryForwardAllowed) });
+      setEditModal(null);
+      fetchLeaveTypes();
+    } catch (e) { setError(e.response?.data?.message || "Failed to update leave type"); }
+    finally { setSaving(false); }
   };
 
   const toggleStatus = async (leave) => {
@@ -49,90 +83,100 @@ const LeaveTypesPage = () => {
     } catch { alert("Failed to update status"); }
   };
 
-  const startEdit = (leave) => {
-    setEditingId(leave.id);
-    setEditData({ name: leave.name, maxDaysPerYear: leave.maxDaysPerYear, description: leave.description || "", carryForwardAllowed: leave.carryForwardAllowed });
-  };
-
-  const saveEdit = async (id) => {
-    if (!validateLeave(editData)) return;
-    try {
-      await api.put(`/admin/leave-types/${id}`, { name: editData.name.trim(), maxDaysPerYear: Number(editData.maxDaysPerYear), description: editData.description, carryForwardAllowed: editData.carryForwardAllowed });
-      setEditingId(null);
-      fetchLeaveTypes();
-    } catch (err) { alert(err.response?.data?.message || "Failed to update leave type"); }
-  };
+  const showModal = createModal || editModal;
+  const isEdit = Boolean(editModal);
 
   return (
-      <MainLayout>
-        <div className="leave-types-container">
-          <div className="header">
-            <h2>Leave Types Management</h2>
-            <button className="btn-create" onClick={() => setShowCreate(true)}>+ Create Leave Type</button>
+    <MainLayout>
+      <div className="lt-page">
+
+        {/* Header */}
+        <div className="lt-header">
+          <div>
+            <h1 className="lt-title">Leave Types</h1>
+            <p className="lt-sub">{leaveTypes.length} types configured</p>
           </div>
+          <button className="lt-btn-primary" onClick={openCreate}>+ New Leave Type</button>
+        </div>
 
-          {loading && <p>Loading...</p>}
-
-          {!loading && (
-              <div className="table-wrapper">
-                <table className="leave-types-table">
-                  <thead>
-                  <tr>
-                    <th>ID</th><th>Name</th><th>Max Days / Year</th>
-                    <th>Description</th><th>Carry Forward</th><th>Status</th><th>Actions</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {leaveTypes.map(leave => (
-                      <tr key={leave.id}>
-                        <td>{leave.id}</td>
-                        <td>{editingId === leave.id ? <input value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} /> : leave.name}</td>
-                        <td>{editingId === leave.id ? <input type="number" value={editData.maxDaysPerYear} onChange={e => setEditData({ ...editData, maxDaysPerYear: e.target.value })} /> : leave.maxDaysPerYear}</td>
-                        <td>{editingId === leave.id ? <input value={editData.description} onChange={e => setEditData({ ...editData, description: e.target.value })} /> : leave.description || "-"}</td>
-                        <td>{editingId === leave.id ? <input type="checkbox" checked={editData.carryForwardAllowed} onChange={e => setEditData({ ...editData, carryForwardAllowed: e.target.checked })} /> : leave.carryForwardAllowed ? "Yes" : "No"}</td>
-                        <td><span className={leave.status === "ACTIVE" ? "badge badge-active" : "badge badge-inactive"}>{leave.status}</span></td>
-                        <td>
-                          {editingId === leave.id ? (
-                              <>
-                                <button className="btn-save" onClick={() => saveEdit(leave.id)}>Save</button>
-                                <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
-                              </>
-                          ) : (
-                              <>
-                                <button className="btn-edit" onClick={() => startEdit(leave)}>Edit</button>
-                                <button className={leave.status === "ACTIVE" ? "btn-disable" : "btn-enable"} onClick={() => toggleStatus(leave)}>
-                                  {leave.status === "ACTIVE" ? "Disable" : "Enable"}
-                                </button>
-                              </>
-                          )}
-                        </td>
-                      </tr>
-                  ))}
-                  </tbody>
-                </table>
-              </div>
-          )}
-
-          {showCreate && (
-              <div className="modal">
-                <div className="modal-content">
-                  <h3>Create Leave Type</h3>
-                  <input placeholder="Name" value={newLeave.name} onChange={e => setNewLeave({ ...newLeave, name: e.target.value })} />
-                  <input type="number" placeholder="Max Days Per Year" value={newLeave.maxDaysPerYear} onChange={e => setNewLeave({ ...newLeave, maxDaysPerYear: e.target.value })} />
-                  <input placeholder="Description (Optional)" value={newLeave.description} onChange={e => setNewLeave({ ...newLeave, description: e.target.value })} />
-                  <label>
-                    <input type="checkbox" checked={newLeave.carryForwardAllowed} onChange={e => setNewLeave({ ...newLeave, carryForwardAllowed: e.target.checked })} />
-                    Carry Forward Allowed
-                  </label>
-                  <div>
-                    <button className="btn-save" onClick={handleCreate}>Save</button>
-                    <button className="btn-cancel" onClick={() => setShowCreate(false)}>Cancel</button>
+        {/* Cards grid */}
+        {loading ? <p className="lt-loading">Loading...</p> : (
+          <div className="lt-grid">
+            {leaveTypes.map(lt => (
+              <div key={lt.id} className={`lt-card ${lt.status === "INACTIVE" ? "lt-card--inactive" : ""}`}>
+                <div className="lt-card-header">
+                  <span className="lt-card-name">{lt.name}</span>
+                  <span className={`lt-badge ${lt.status === "ACTIVE" ? "lt-badge--active" : "lt-badge--inactive"}`}>
+                    {lt.status}
+                  </span>
+                </div>
+                <div className="lt-card-body">
+                  <div className="lt-stat">
+                    <span className="lt-stat-value">{lt.maxDaysPerYear}</span>
+                    <span className="lt-stat-label">days / year</span>
+                  </div>
+                  <div className="lt-meta">
+                    <span className={`lt-carry ${lt.carryForwardAllowed ? "lt-carry--yes" : "lt-carry--no"}`}>
+                      {lt.carryForwardAllowed ? "✓ Carry forward" : "✗ No carry forward"}
+                    </span>
+                    {lt.description && <p className="lt-desc">{lt.description}</p>}
                   </div>
                 </div>
+                <div className="lt-card-actions">
+                  <button className="lt-btn-edit" onClick={() => openEdit(lt)}>Edit</button>
+                  <button className={lt.status === "ACTIVE" ? "lt-btn-disable" : "lt-btn-enable"} onClick={() => toggleStatus(lt)}>
+                    {lt.status === "ACTIVE" ? "Disable" : "Enable"}
+                  </button>
+                </div>
               </div>
-          )}
-        </div>
-      </MainLayout>
+            ))}
+          </div>
+        )}
+
+        {/* Modal */}
+        {showModal && (
+          <div className="lt-overlay" onClick={closeModal}>
+            <div className="lt-modal" onClick={e => e.stopPropagation()}>
+              <div className="lt-modal-header">
+                <h2>{isEdit ? `Edit — ${editModal.name}` : "New Leave Type"}</h2>
+                <button className="lt-modal-close" onClick={closeModal}>✕</button>
+              </div>
+
+              <form className="lt-modal-form" onSubmit={isEdit ? handleEdit : handleCreate}>
+                {error && <div className="lt-error">{error}</div>}
+
+                <div className="lt-field">
+                  <label>Name <span className="lt-required">*</span></label>
+                  <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="e.g. Sick Leave" required />
+                </div>
+
+                <div className="lt-field">
+                  <label>Max Days per Year <span className="lt-required">*</span></label>
+                  <input type="number" min="0" max="365" value={form.maxDaysPerYear} onChange={e => setForm({...form, maxDaysPerYear: e.target.value})} placeholder="e.g. 10" required />
+                </div>
+
+                <div className="lt-field">
+                  <label>Description <span className="lt-optional">(optional)</span></label>
+                  <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Brief description of when this leave applies..." rows={3} />
+                </div>
+
+                <label className="lt-checkbox-label">
+                  <input type="checkbox" checked={form.carryForwardAllowed} onChange={e => setForm({...form, carryForwardAllowed: e.target.checked})} />
+                  <span>Allow carry forward to next year</span>
+                </label>
+
+                <div className="lt-modal-actions">
+                  <button type="button" className="lt-btn-cancel" onClick={closeModal}>Cancel</button>
+                  <button type="submit" className="lt-btn-primary" disabled={saving}>
+                    {saving ? "Saving..." : isEdit ? "Save Changes" : "Create"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </MainLayout>
   );
 };
 

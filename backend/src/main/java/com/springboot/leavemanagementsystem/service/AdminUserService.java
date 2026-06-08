@@ -30,7 +30,6 @@ public class AdminUserService {
                             PasswordEncoder passwordEncoder,
                             LeaveTypeRepository leaveTypeRepository,
                             LeaveBalanceRepository leaveBalanceRepository) {
-
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -38,9 +37,7 @@ public class AdminUserService {
         this.leaveBalanceRepository = leaveBalanceRepository;
     }
 
-    // -------------------- MAPPING --------------------
     private UserResponse mapToResponse(User user) {
-
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setFirstName(user.getFirstName());
@@ -51,18 +48,16 @@ public class AdminUserService {
         response.setJoiningDate(user.getJoiningDate());
 
         if (user.getManager() != null) {
-            response.setManagerId(user.getManager().getId()); // ADD THIS
+            response.setManagerId(user.getManager().getId());
             response.setManagerName(
                     user.getManager().getFirstName() + " " +
                             user.getManager().getLastName()
             );
         }
-
         return response;
     }
 
-    // -------------------- CREATE USER --------------------
-
+    // CREATE USER
     public UserResponse createUser(CreateUserRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -77,11 +72,9 @@ public class AdminUserService {
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         String roleName = role.getName();
-
         User manager = null;
 
         if (request.getManagerId() != null) {
-
             manager = userRepository.findById(request.getManagerId())
                     .orElseThrow(() -> new RuntimeException("Manager not found"));
 
@@ -114,7 +107,6 @@ public class AdminUserService {
         );
 
         user.setManager(manager);
-
         User savedUser = userRepository.save(user);
 
         // Initialize Leave Balance ONLY for EMPLOYEE
@@ -125,38 +117,31 @@ public class AdminUserService {
         return mapToResponse(savedUser);
     }
 
-    // -------------------- LEAVE BALANCE INITIALIZATION --------------------
-
     private void initializeLeaveBalances(User employee) {
-
         int currentYear = LocalDate.now().getYear();
-
-        List<LeaveType> activeLeaveTypes =
-                leaveTypeRepository.findByStatus(LeaveTypeStatus.ACTIVE);
+        List<LeaveType> activeLeaveTypes = leaveTypeRepository.findByStatus(LeaveTypeStatus.ACTIVE);
 
         for (LeaveType leaveType : activeLeaveTypes) {
-
-            LeaveBalance balance = new LeaveBalance(
-                    employee,
-                    leaveType,
-                    currentYear,
-                    leaveType.getMaxDaysPerYear()
-            );
-
-            leaveBalanceRepository.save(balance);
+            // FIX BUG 1: Check if balance already exists before creating
+            leaveBalanceRepository
+                    .findByUserAndLeaveTypeAndYear(employee, leaveType, currentYear)
+                    .orElseGet(() -> {
+                        LeaveBalance balance = new LeaveBalance(
+                                employee, leaveType, currentYear,
+                                leaveType.getMaxDaysPerYear()
+                        );
+                        return leaveBalanceRepository.save(balance);
+                    });
         }
     }
 
     public UserResponse getUserById(Long id) {
-
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         return mapToResponse(user);
     }
 
     public Page<UserResponse> getAllUsers(Pageable pageable) {
-
         Page<User> userPage = userRepository.findAll(pageable);
         return userPage.map(this::mapToResponse);
     }
@@ -190,20 +175,18 @@ public class AdminUserService {
         if (request.getRoleId() != null) {
             Role role = roleRepository.findById(request.getRoleId())
                     .orElseThrow(() -> new RuntimeException("Role not found"));
-
             user.setRole(role);
         }
 
-        // MANAGER
-        User manager = null;
-
+        // FIX BUG 1: Only update manager if managerId is explicitly provided
+        // If not provided, keep the existing manager — don't require it every time
         if (request.getManagerId() != null) {
 
             if (request.getManagerId().equals(id)) {
                 throw new RuntimeException("User cannot be their own manager");
             }
 
-            manager = userRepository.findById(request.getManagerId())
+            User manager = userRepository.findById(request.getManagerId())
                     .orElseThrow(() -> new RuntimeException("Manager not found"));
 
             if (!manager.getRole().getName().equals("MANAGER")) {
@@ -213,32 +196,26 @@ public class AdminUserService {
             if (manager.getStatus() != UserStatus.ACTIVE) {
                 throw new RuntimeException("Assigned manager must be ACTIVE");
             }
-        }
 
-        // If EMPLOYEE role then must have manager
-        if (user.getRole().getName().equals("EMPLOYEE") && manager == null) {
-            throw new RuntimeException("Employee must have a manager");
+            user.setManager(manager);
         }
-
-        user.setManager(manager);
 
         // BASIC FIELDS
-        if (request.getFirstName() != null)
-            user.setFirstName(request.getFirstName());
-
-        if (request.getLastName() != null)
-            user.setLastName(request.getLastName());
-
-        if (request.getJoiningDate() != null)
-            user.setJoiningDate(request.getJoiningDate());
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getJoiningDate() != null) user.setJoiningDate(request.getJoiningDate());
 
         return mapToResponse(userRepository.save(user));
     }
 
     public UserResponse toggleUserStatus(Long id) {
-
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Protect admin accounts from being deactivated
+        if (user.getRole().getName().equals("ADMIN")) {
+            throw new RuntimeException("Admin accounts cannot be deactivated.");
+        }
 
         if (user.getStatus() == UserStatus.ACTIVE) {
             user.setStatus(UserStatus.INACTIVE);

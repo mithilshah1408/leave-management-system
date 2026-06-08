@@ -1,0 +1,54 @@
+.ce-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+
+.ce-modal {
+  background: white; border-radius: 16px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: ce-up 0.2s ease;
+}
+
+@keyframes ce-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ce-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 0; position: sticky; top: 0; background: white; z-index: 1; }
+.ce-header h2 { font-size: 18px; font-weight: 700; color: #111827; margin: 0; }
+.ce-close { background: none; border: none; font-size: 18px; color: #6b7280; cursor: pointer; line-height: 1; padding: 4px; }
+.ce-close:hover { color: #111827; }
+
+.ce-form { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.ce-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.ce-field { display: flex; flex-direction: column; gap: 5px; }
+.ce-field label { font-size: 13px; font-weight: 600; color: #374151; }
+.ce-field input, .ce-field select {
+  padding: 9px 12px; border-radius: 8px; border: 1.5px solid #d1d5db;
+  font-size: 14px; transition: border 0.15s; background: white;
+}
+.ce-field input:focus, .ce-field select:focus { outline: none; border-color: #2563eb; }
+
+.ce-password-wrap { position: relative; }
+.ce-password-wrap input { width: 100%; box-sizing: border-box; padding-right: 60px; }
+.ce-toggle-pw {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: #6b7280; font-size: 12px; cursor: pointer; font-weight: 600;
+}
+.ce-toggle-pw:hover { color: #2563eb; }
+
+.ce-req { color: #ef4444; }
+.ce-hint { font-size: 12px; color: #f59e0b; margin: 4px 0 0; }
+
+.ce-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+
+.ce-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
+.ce-btn-cancel { background: #f3f4f6; color: #374151; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.ce-btn-cancel:hover { background: #e5e7eb; }
+.ce-btn-submit { background: #2563eb; color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.ce-btn-submit:hover { background: #1d4ed8; }
+.ce-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .ce-row { grid-template-columns: 1fr; }
+  .ce-modal { border-radius: 12px; }
+}

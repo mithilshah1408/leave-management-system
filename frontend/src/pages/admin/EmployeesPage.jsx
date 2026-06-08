@@ -7,19 +7,24 @@ import "./EmployeesPage.css";
 function EmployeesPage() {
   const [employees, setEmployees] = useState([]);
   const [managers, setManagers] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [editModal, setEditModal] = useState(null);
   const [editData, setEditData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/employees?page=0&size=50");
-      setEmployees(res.data.content);
-      setManagers(res.data.content.filter(emp => emp.role === "MANAGER" && emp.status === "ACTIVE"));
+      const res = await api.get("/admin/employees?page=0&size=100");
+      // Sort by ID so order never changes after edits
+      const sorted = [...res.data.content].sort((a, b) => a.id - b.id);
+      setEmployees(sorted);
+      setManagers(sorted.filter(e => e.role === "MANAGER" && e.status === "ACTIVE"));
     } catch {
       alert("Failed to load employees");
     } finally {
@@ -30,103 +35,114 @@ function EmployeesPage() {
   const toggleStatus = async (emp) => {
     try {
       await api.patch(`/admin/employees/${emp.id}/status`);
-      setEmployees(prev => prev.map(e =>
-          e.id === emp.id ? { ...e, status: e.status === "ACTIVE" ? "INACTIVE" : "ACTIVE" } : e
-      ));
+      // Update in-place, preserving row order
+      setEmployees(prev =>
+          prev.map(e => e.id === emp.id
+              ? { ...e, status: e.status === "ACTIVE" ? "INACTIVE" : "ACTIVE" }
+              : e
+          )
+      );
     } catch { alert("Status update failed"); }
   };
 
-  const startEdit = (emp) => {
-    setEditingId(emp.id);
+  const openEdit = (emp) => {
     setEditData({ firstName: emp.firstName, lastName: emp.lastName, email: emp.email, managerId: emp.managerId || "" });
+    setError("");
+    setEditModal(emp);
   };
 
-  const cancelEdit = () => setEditingId(null);
-
-  const handleChange = (e) => setEditData({ ...editData, [e.target.name]: e.target.value });
-
-  const saveUpdate = async (emp) => {
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    setSaving(true); setError("");
     try {
-      await api.put(`/admin/employees/${emp.id}`, {
-        firstName: editData.firstName, lastName: editData.lastName,
-        email: editData.email, managerId: editData.managerId || null,
+      const res = await api.put(`/admin/employees/${editModal.id}`, {
+        firstName: editData.firstName,
+        lastName: editData.lastName,
+        email: editData.email,
+        managerId: editData.managerId ? Number(editData.managerId) : undefined,
       });
-      setEmployees(prev => prev.map(e =>
-          e.id === emp.id ? {
-            ...e, firstName: editData.firstName, lastName: editData.lastName,
-            email: editData.email, managerId: editData.managerId,
-            managerName: managers.find(m => m.id == editData.managerId)
-                ? `${managers.find(m => m.id == editData.managerId).firstName} ${managers.find(m => m.id == editData.managerId).lastName}`
-                : null,
-          } : e
-      ));
-      setEditingId(null);
-    } catch { alert("Update failed"); }
+      // Update the employee in-place at its current position — don't re-sort/re-fetch
+      setEmployees(prev =>
+          prev.map(e => e.id === editModal.id
+              ? { ...e, ...res.data, id: editModal.id }
+              : e
+          )
+      );
+      setEditModal(null);
+    } catch (err) {
+      setError(err.response?.data?.message || "Update failed");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const formatDate = (date) => date ? new Date(date).toLocaleDateString() : "-";
+  const filtered = employees.filter(e =>
+      `${e.firstName} ${e.lastName} ${e.email} ${e.role}`.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const roleColor = { ADMIN: "#7c3aed", MANAGER: "#2563eb", EMPLOYEE: "#059669" };
+  const formatDate = d => d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "—";
 
   return (
       <MainLayout>
-        <div className="employees-container">
-          <div className="header">
-            <h2>Employee Management</h2>
-            <button className="btn-primary" onClick={() => setShowForm(true)}>+ Create Employee</button>
+        <div className="ep-page">
+          <div className="ep-header">
+            <div>
+              <h1 className="ep-title">Employees</h1>
+              <p className="ep-sub">{employees.length} total · {employees.filter(e => e.status === "ACTIVE").length} active</p>
+            </div>
+            <button className="ep-btn-primary" onClick={() => setShowCreate(true)}>+ New Employee</button>
           </div>
 
-          {loading && <p>Loading...</p>}
+          <div className="ep-search-row">
+            <input className="ep-search" placeholder="Search by name, email or role…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
 
-          {!loading && (
-              <div className="table-wrapper">
-                <table className="employees-table">
+          {loading ? <p className="ep-loading">Loading...</p> : (
+              <div className="ep-table-wrap">
+                <table className="ep-table">
                   <thead>
                   <tr>
-                    <th>ID</th><th>Name</th><th>Email</th><th>Role</th>
-                    <th>Joining Date</th><th>Status</th><th>Manager</th><th>Actions</th>
+                    <th>Name</th><th>Email</th><th>Role</th>
+                    <th>Manager</th><th>Joined</th><th>Status</th><th>Actions</th>
                   </tr>
                   </thead>
                   <tbody>
-                  {employees.map(emp => (
+                  {filtered.length === 0 ? (
+                      <tr><td colSpan={7} className="ep-empty">No employees found</td></tr>
+                  ) : filtered.map(emp => (
                       <tr key={emp.id}>
-                        <td>{emp.id}</td>
                         <td>
-                          {editingId === emp.id ? (
-                              <>
-                                <input name="firstName" value={editData.firstName} onChange={handleChange} />
-                                <input name="lastName" value={editData.lastName} onChange={handleChange} />
-                              </>
-                          ) : `${emp.firstName} ${emp.lastName}`}
+                          <div className="ep-name-cell">
+                            <div className="ep-avatar" style={{ background: roleColor[emp.role] || "#6b7280" }}>
+                              {emp.firstName[0]}{emp.lastName[0]}
+                            </div>
+                            <div>
+                              <div className="ep-fullname">{emp.firstName} {emp.lastName}</div>
+                              <div className="ep-username">@{emp.username || emp.email.split("@")[0]}</div>
+                            </div>
+                          </div>
                         </td>
+                        <td className="ep-email">{emp.email}</td>
                         <td>
-                          {editingId === emp.id
-                              ? <input name="email" value={editData.email} onChange={handleChange} />
-                              : emp.email}
+                      <span className="ep-role-badge" style={{ background: roleColor[emp.role] + "20", color: roleColor[emp.role] }}>
+                        {emp.role}
+                      </span>
                         </td>
-                        <td>{emp.role}</td>
-                        <td>{formatDate(emp.joiningDate)}</td>
+                        <td className="ep-manager">{emp.managerName || <span className="ep-na">—</span>}</td>
+                        <td className="ep-date">{formatDate(emp.joiningDate)}</td>
                         <td>
-                          <span className={emp.status === "ACTIVE" ? "badge badge-active" : "badge badge-inactive"}>{emp.status}</span>
-                          <input type="checkbox" checked={emp.status === "ACTIVE"} onChange={() => toggleStatus(emp)} />
-                        </td>
-                        <td>
-                          {emp.role === "EMPLOYEE" ? (
-                              editingId === emp.id ? (
-                                  <select name="managerId" value={editData.managerId} onChange={handleChange}>
-                                    <option value="">Select Manager</option>
-                                    {managers.map(m => <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>)}
-                                  </select>
-                              ) : emp.managerName || "-"
-                          ) : "-"}
-                        </td>
-                        <td>
-                          {editingId === emp.id ? (
-                              <>
-                                <button className="btn-save" onClick={() => saveUpdate(emp)}>Save</button>
-                                <button className="btn-cancel" onClick={cancelEdit}>Cancel</button>
-                              </>
+                          {emp.role !== "ADMIN" ? (
+                              <label className="ep-toggle">
+                                <input type="checkbox" checked={emp.status === "ACTIVE"} onChange={() => toggleStatus(emp)} />
+                                <span className="ep-toggle-slider" />
+                              </label>
                           ) : (
-                              <button className="btn-edit" onClick={() => startEdit(emp)}>Edit</button>
+                              <span style={{ fontSize:"12px", color:"#94a3b8", fontStyle:"italic" }}>protected</span>
                           )}
+                        </td>
+                        <td>
+                          <button className="ep-btn-edit" onClick={() => openEdit(emp)}>Edit</button>
                         </td>
                       </tr>
                   ))}
@@ -135,10 +151,45 @@ function EmployeesPage() {
               </div>
           )}
 
-          {showForm && (
-              <div className="modal-overlay">
-                <div className="modal-content">
-                  <CreateEmployee onClose={() => setShowForm(false)} onSuccess={loadData} />
+          {showCreate && <CreateEmployee onClose={() => setShowCreate(false)} onSuccess={loadData} />}
+
+          {editModal && (
+              <div className="ep-overlay" onClick={() => setEditModal(null)}>
+                <div className="ep-edit-modal" onClick={e => e.stopPropagation()}>
+                  <div className="ep-edit-header">
+                    <h2>Edit — {editModal.firstName} {editModal.lastName}</h2>
+                    <button className="ep-close" onClick={() => setEditModal(null)}>✕</button>
+                  </div>
+                  <form className="ep-edit-form" onSubmit={saveEdit}>
+                    {error && <div className="ep-error">{error}</div>}
+                    <div className="ep-edit-row">
+                      <div className="ep-field">
+                        <label>First Name</label>
+                        <input value={editData.firstName} onChange={e => setEditData({...editData, firstName: e.target.value})} required />
+                      </div>
+                      <div className="ep-field">
+                        <label>Last Name</label>
+                        <input value={editData.lastName} onChange={e => setEditData({...editData, lastName: e.target.value})} required />
+                      </div>
+                    </div>
+                    <div className="ep-field">
+                      <label>Email</label>
+                      <input type="email" value={editData.email} onChange={e => setEditData({...editData, email: e.target.value})} required />
+                    </div>
+                    {editModal.role === "EMPLOYEE" && (
+                        <div className="ep-field">
+                          <label>Manager</label>
+                          <select value={editData.managerId} onChange={e => setEditData({...editData, managerId: e.target.value})}>
+                            <option value="">Keep current manager</option>
+                            {managers.map(m => <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>)}
+                          </select>
+                        </div>
+                    )}
+                    <div className="ep-edit-actions">
+                      <button type="button" className="ep-btn-cancel" onClick={() => setEditModal(null)}>Cancel</button>
+                      <button type="submit" className="ep-btn-primary" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</button>
+                    </div>
+                  </form>
                 </div>
               </div>
           )}

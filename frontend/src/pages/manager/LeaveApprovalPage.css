@@ -31,3 +31,12 @@
 @media (max-width: 768px) {
   .leave-approval-container { padding: 16px; }
 }
+.error-banner { background: #fee2e2; color: #991b1b; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+.reason-cell { max-width: 240px; font-size: 13px; }
+.reason-text {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: #374151;
+}

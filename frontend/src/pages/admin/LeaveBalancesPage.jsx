@@ -17,32 +17,50 @@ export default function LeaveBalancesPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => { fetchEmployees(); fetchBalances("", currentYear, 0); }, []);
+  useEffect(() => {
+    fetchEmployees();
+    fetchBalances("", currentYear, 0);
+  }, []);
 
   const fetchEmployees = async () => {
     try {
       const res = await api.get("/admin/employees?page=0&size=100");
-      setEmployees((res.data.content || res.data || []).filter(emp => emp.status === "ACTIVE"));
-    } catch (error) { console.error("Employee fetch failed:", error); }
+      // Only show EMPLOYEE role — leave balances are strictly for employees
+      const employeesOnly = (res.data.content || res.data || []).filter(
+          emp => emp.status === "ACTIVE" && emp.role === "EMPLOYEE"
+      );
+      setEmployees(employeesOnly);
+    } catch (err) {
+      console.error("Employee fetch failed:", err);
+    }
   };
 
-  const fetchBalances = async (userId, year, pageNumber = 0) => {
+  const fetchBalances = async (userId, yr, pageNumber = 0) => {
+    setError("");
     try {
       setLoading(true);
-      const res = await getLeaveBalances(userId || null, year, pageNumber, size);
+      const res = await getLeaveBalances(userId || null, yr, pageNumber, size);
       if (Array.isArray(res.data)) {
         setBalances(res.data); setTotalPages(1); setTotalElements(res.data.length); setPage(0);
       } else {
         setBalances(res.data.content || []); setTotalPages(res.data.totalPages || 0);
         setTotalElements(res.data.totalElements || 0); setPage(res.data.number || 0);
       }
-    } catch (error) { console.error("Balance fetch failed:", error); }
-    finally { setLoading(false); }
+    } catch (err) {
+      setError("Failed to load leave balances.");
+      console.error("Balance fetch failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSearch = () => fetchBalances(selectedUser, year, 0);
-  const handleInitialize = async () => { await initializeYear(year); fetchBalances(selectedUser, year, 0); };
+  const handleInitialize = async () => {
+    await initializeYear(year);
+    fetchBalances(selectedUser, year, 0);
+  };
   const handleAdjust = async (id, newTotal) => {
     await adjustLeaveBalance(id, parseInt(newTotal));
     setSelectedBalance(null);
@@ -53,13 +71,20 @@ export default function LeaveBalancesPage() {
       <MainLayout>
         <div className="leave-balances-page">
           <h2>Leave Balance Management</h2>
+          <p style={{ color:"#6b7280", marginBottom:"20px", fontSize:14 }}>
+            Manage and adjust leave allocations for employees.
+          </p>
+
+          {error && <p className="error-banner">{error}</p>}
 
           <div className="filters">
-            <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+            <select value={selectedUser} onChange={e => setSelectedUser(e.target.value)}>
               <option value="">All Employees</option>
-              {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>)}
+              {employees.map(emp => (
+                  <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>
+              ))}
             </select>
-            <input type="number" value={year} onChange={(e) => setYear(e.target.value)} />
+            <input type="number" value={year} onChange={e => setYear(e.target.value)} min="2020" max="2099" />
             <button className="btn-primary" onClick={handleSearch}>Search</button>
             <button className="btn-secondary" onClick={handleInitialize}>Initialize Year</button>
           </div>
@@ -74,7 +99,7 @@ export default function LeaveBalancesPage() {
               </thead>
               <tbody>
               {loading ? (
-                  <tr><td colSpan="7" className="loading">Loading...</td></tr>
+                  <tr><td colSpan="7" className="loading">Loading…</td></tr>
               ) : balances.length === 0 ? (
                   <tr><td colSpan="7" className="no-data">No records found</td></tr>
               ) : (
@@ -100,7 +125,7 @@ export default function LeaveBalancesPage() {
 
           <div className="pagination">
             <button disabled={page === 0} onClick={() => fetchBalances(selectedUser, year, page - 1)}>Previous</button>
-            <span>Page {page + 1} of {totalPages} | Total Records: {totalElements}</span>
+            <span>Page {page + 1} of {totalPages} · {totalElements} records</span>
             <button disabled={page + 1 >= totalPages} onClick={() => fetchBalances(selectedUser, year, page + 1)}>Next</button>
           </div>
 
